@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('exports', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('exported_by')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
-            $table->foreignId('promotion_id')->constrained('promotions')->restrictOnDelete();
+        Schema::table('exports', function (Blueprint $table) {
+            $table->foreignId('promotion_id')->nullable()->constrained('promotions')->nullOnDelete();
             $table->date('date_from')->nullable();
             $table->date('date_to')->nullable();
-            $table->timestamps();
         });
     }
 
@@ -26,6 +23,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('exports');
+        Schema::table('exports', function (Blueprint $table) {
+            $table->dropForeign(['promotion_id']);
+            $table->dropColumn(['promotion_id', 'date_from', 'date_to']);
+        });
     }
 };

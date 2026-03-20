@@ -12,12 +12,19 @@ class ProductForm
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label('Termék neve')
                     ->required()
                     ->minLength(3)
                     ->maxLength(75),
                 TextInput::make('description')
+                ->label('Leírás')
                     ->nullable()
                     ->rules(['nullable', 'min:25', 'max:125']),
+                TextInput::make('price')
+                    ->label('Termék ára')
+                    ->integer()
+                    ->required()
+                    ->minValue(1),
             ]);
     }
 }

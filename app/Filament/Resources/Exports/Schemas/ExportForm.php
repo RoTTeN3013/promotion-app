@@ -2,7 +2,8 @@
 
 namespace App\Filament\Resources\Exports\Schemas;
 
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
 
 class ExportForm
@@ -11,9 +12,19 @@ class ExportForm
     {
         return $schema
             ->components([
-                TextInput::make('exported_by')
+                Select::make('promotion_id')
+                    ->label('Promóció')
+                    ->relationship('promotion', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                DatePicker::make('date_from')
+                    ->label('Dátumtól')
+                    ->required(),
+                DatePicker::make('date_to')
+                    ->label('Dátumig')
                     ->required()
-                    ->numeric(),
+                    ->afterOrEqual('date_from'),
             ]);
     }
 }
