@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'support' => [
+        'email' => env('SUPPORT_EMAIL', env('MAIL_FROM_ADDRESS', 'promotions@admin.com')),
+    ],
+
 ];

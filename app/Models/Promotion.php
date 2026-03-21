@@ -31,4 +31,13 @@ class Promotion extends Model
     {
         return $this->belongsTo(Admin::class, 'created_by');
     }
+
+    public function getActivePromotions()
+    {
+        $currentDate = now();
+
+        return self::where('date_from', '<=', $currentDate)
+            ->where('date_to', '>=', $currentDate)
+            ->get();
+    }
 }

@@ -75,7 +75,7 @@ class AuthController extends Controller
 
         $user = Auth::user();
 
-        return view('dashboard')->with('success', 'Sikeres bejelentkezés! Üdv újra itt ' . $user->first_name . '!');
+        return redirect()->to('user-dashboard')->with('success', 'Sikeres bejelentkezés! Üdv újra itt ' . $user->first_name . '!');
     }
 
     public function logUserOut() {
