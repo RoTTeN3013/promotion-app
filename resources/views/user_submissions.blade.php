@@ -12,6 +12,48 @@
         <a href="{{ route('create-user-submission') }}" class="btn btn-primary">Új feltöltés</a>
     </div>
 
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ route('user-submissions') }}" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label for="status" class="form-label">Státusz</label>
+                    <select name="status" id="status" class="form-select">
+                        <option value="">Összes</option>
+                        @foreach($statuses as $statusKey => $statusLabel)
+                            <option value="{{ $statusKey }}" @selected($selectedStatus === $statusKey)>{{ $statusLabel }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="promotion_id" class="form-label">Promóció</label>
+                    <select name="promotion_id" id="promotion_id" class="form-select">
+                        <option value="">Összes</option>
+                        @foreach($promotions as $promotion)
+                            <option value="{{ $promotion->id }}" @selected($selectedPromotionId === (string) $promotion->id)>{{ $promotion->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="date_from" class="form-label">Dátum -tól</label>
+                    <input type="date" name="date_from" id="date_from" class="form-control" value="{{ $selectedDateFrom }}">
+                </div>
+
+                <div class="col-md-2">
+                    <label for="date_to" class="form-label">Dátum -ig</label>
+                    <input type="date" name="date_to" id="date_to" class="form-control" value="{{ $selectedDateTo }}">
+                </div>
+
+                <div class="col-md-2 d-flex gap-2">
+                    <div class="d-flex flex-column">
+                        <button type="submit" class="btn btn-primary mb-1">Szűrés</button>
+                        <a href="{{ route('user-submissions') }}" class="btn btn-outline-secondary">Szűrő törlése</a>
+                    </div>
+            </form>
+        </div>
+    </div>
+
     @if($submissions->isEmpty())
         <div class="alert alert-info">
             Még nincs egyetlen feltöltésed sem.
@@ -80,6 +122,10 @@
                     @endforeach
                 </tbody>
             </table>
+        </div>
+
+        <div class="mt-4 d-flex justify-content-center">
+            {{ $submissions->onEachSide(1)->links('pagination::bootstrap-5') }}
         </div>
     @endif
 @endsection

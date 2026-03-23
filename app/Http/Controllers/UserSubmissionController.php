@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\SubmissionStatusHelper;
 use App\Models\Product;
 use App\Models\Promotion;
 use App\Models\Submission;
@@ -14,15 +15,43 @@ use Illuminate\Support\Facades\Validator;
 
 class UserSubmissionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $statuses = SubmissionStatusHelper::statuses();
+        $selectedStatus = (string) $request->query('status', '');
+        $selectedPromotionId = (string) $request->query('promotion_id', '');
+        $selectedDateFrom = (string) $request->query('date_from', '');
+        $selectedDateTo = (string) $request->query('date_to', '');
+
         $submissions = Submission::query()
             ->with('promotion')
             ->where('user_id', Auth::id())
+            ->when(
+                $selectedStatus !== '' && array_key_exists($selectedStatus, $statuses),
+                fn ($query) => $query->where('status', $selectedStatus)
+            )
+            ->when(
+                $selectedPromotionId !== '' && ctype_digit($selectedPromotionId),
+                fn ($query) => $query->where('promotion_id', (int) $selectedPromotionId)
+            )
+            ->when(
+                $selectedDateFrom !== '',
+                fn ($query) => $query->whereDate('purchase_date', '>=', $selectedDateFrom)
+            )
+            ->when(
+                $selectedDateTo !== '',
+                fn ($query) => $query->whereDate('purchase_date', '<=', $selectedDateTo)
+            )
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
 
-        return view('user_submissions', compact('submissions'));
+        $promotions = Promotion::query()
+            ->whereHas('submissions', fn ($query) => $query->where('user_id', Auth::id()))
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return view('user_submissions', compact('submissions', 'statuses', 'promotions', 'selectedStatus', 'selectedPromotionId', 'selectedDateFrom', 'selectedDateTo'));
     }
 
     public function show(Submission $submission)
