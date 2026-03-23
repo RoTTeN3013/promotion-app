@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('ap_no');
             $table->json('items');
             $table->string('status')->default('submitted');
+            $table->text('message')->nullable();
             $table->date('purchase_date');
             $table->date('appeald_at')->nullable();
             $table->timestamps();

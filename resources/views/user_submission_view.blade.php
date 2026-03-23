@@ -22,6 +22,24 @@
                 <dt class="col-sm-3">Statusz</dt>
                 <dd class="col-sm-9">{{ SubmissionStatusHelper::label($submission->status) }}</dd>
 
+                @if($submission->status === 'need_data' && $submission->message)
+                    <dt class="col-sm-3">Megjegyzés</dt>
+                    <dd class="col-sm-9">
+                        <div class="alert alert-warning mb-0">
+                            {{ $submission->message }}
+                        </div>
+                    </dd>
+                @endif
+
+                @if($submission->status === 'need_data')
+                    <dt class="col-sm-3"></dt>
+                    <dd class="col-sm-9">
+                        <div class="alert alert-info">
+                            <strong>⚠️ Fontos:</strong> Kérjük, frissítse a szükséges adatokat a profilján, majd kattintson az alábbi "Frissítve" gombra, hogy a feltöltés felülvizsgálatra kerüljön.
+                        </div>
+                    </dd>
+                @endif
+
                 <dt class="col-sm-3">Termékek</dt>
                 <dd class="col-sm-9">
                     @if($submission->items)
@@ -68,5 +86,16 @@
                 </dd>
             </dl>
         </div>
+
+        @if($submission->status === 'need_data')
+            <div class="card-footer bg-light">
+                <form action="{{ route('mark-updated-user-submission', $submission) }}" method="POST" class="d-inline" onsubmit="return confirm('Biztosan szeretnéd megjelölni a feltöltést frissítettként?');">
+                    @csrf
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-check"></i> Frissítve
+                    </button>
+                </form>
+            </div>
+        @endif
     </div>
 @endsection

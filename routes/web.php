@@ -34,6 +34,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/view-user-submission/{submission}', [UserSubmissionController::class, 'show'])->name('view-user-submission');
     Route::post('/log-out', [AuthController::class, 'logUserOut'])->name('logout');
     Route::get('/promotions/{promotion}', [DashboardController::class, 'showPromotion'])->name('promotion.show');
+    Route::post('/user-submissions/{submission}/mark-updated', [UserSubmissionController::class, 'markUpdated'])->name('mark-updated-user-submission');
 });
 
 Route::middleware(['auth:admin'])->group(function () {

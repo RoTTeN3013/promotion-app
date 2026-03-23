@@ -34,7 +34,12 @@
                         <tr>
                             <td>{{ $submission->id }}</td>
                             <td>{{ $submission->promotion?->name ?? '-' }}</td>
-                            <td>{{ SubmissionStatusHelper::label($submission->status) }}</td>
+                            <td>
+                                {{ SubmissionStatusHelper::label($submission->status) }}
+                                @if($submission->status === 'need_data' && $submission->message)
+                                    <br><small class="text-muted">💬 Üzenet érkezett</small>
+                                @endif
+                            </td>
                             <td>
                                 @if($submission->items)
                                     <ul class="mb-0">

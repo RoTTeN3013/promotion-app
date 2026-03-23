@@ -17,6 +17,7 @@ class Submission extends Model
         'ap_no',
         'items',
         'status',
+        'message',
         'purchase_date',
         'appeald_at',
     ];

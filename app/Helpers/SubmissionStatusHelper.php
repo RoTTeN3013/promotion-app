@@ -9,6 +9,8 @@ class SubmissionStatusHelper
         return [
             'submitted' => 'Feltöltve',
             'under_review' => 'Ellenőrzés alatt',
+            'need_data' => 'Információ szükséges',
+            'updated' => 'Frissítve',
             'approved' => 'Elfogadva',
             'rejected' => 'Elutasítva',
             'appealed' => 'Fellebbezve',

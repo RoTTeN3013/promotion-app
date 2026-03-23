@@ -243,4 +243,23 @@ class UserSubmissionController extends Controller
             ->route('user-submissions')
             ->with('success', 'A fellebbezés sikeresen benyújtva.');
     }
+
+    public function markUpdated(Submission $submission): RedirectResponse
+    {
+        abort_unless($submission->user_id === Auth::id(), 403);
+
+        if ($submission->status !== 'need_data') {
+            return back()->withErrors([
+                'submission' => 'Ezt a műveletet csak "Információ szükséges" státuszú feltöltésre lehet alkalmazni.',
+            ]);
+        }
+
+        $submission->update([
+            'status' => 'updated',
+        ]);
+
+        return redirect()
+            ->route('user-submissions')
+            ->with('success', 'A feltöltés sikeresen megjelölve frissítettként. Az adminok hamarosan felülvizsgálják.');
+    }
 }

@@ -19,13 +19,20 @@ class SubmissionsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('id')
                     ->sortable(),
                 TextColumn::make('user_full_name')
                     ->label('Felhasználó')
                     ->getStateUsing(fn (Submission $record): string => $record->user ? ($record->user->first_name . ' ' . $record->user->last_name) : '-')
-                    ->searchable(['user.first_name', 'user.last_name']),
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereHas('user', function (Builder $userQuery) use ($search): void {
+                            $userQuery
+                                ->where('first_name', 'like', "%{$search}%")
+                                ->orWhere('last_name', 'like', "%{$search}%");
+                        });
+                    }),
                 TextColumn::make('promotion.name')
                     ->searchable(),
                 TextColumn::make('status')
@@ -37,6 +44,11 @@ class SubmissionsTable
                 TextColumn::make('appeald_at')
                     ->date()
                     ->sortable(),
+                TextColumn::make('message')
+                    ->label('Üzenet')
+                    ->limit(50)
+                    ->tooltip(fn (Submission $record): ?string => $record->message ? htmlspecialchars($record->message) : null)
+                    ->visible(fn () => true),
             ])
             ->filters([
                 SelectFilter::make('promotion_id')

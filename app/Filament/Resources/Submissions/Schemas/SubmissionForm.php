@@ -7,6 +7,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -63,6 +64,18 @@ class SubmissionForm
                         'required' => 'A(z) :attribute mező kitöltése kötelező.',
                     ])
                     ->default('submitted'),
+                Textarea::make('message')
+                    ->label('Megjegyzés/Üzenet')
+                    ->placeholder('Szükséges információkat vagy megjegyzéseket adhat meg...')
+                    ->visible(fn ($get, $record) => in_array($get('status') ?? $record?->status, ['need_data', 'updated'], true))
+                    ->disabled(fn ($get, $record) => ($get('status') ?? $record?->status) === 'updated')
+                    ->required(fn ($get, $record) => ($get('status') ?? $record?->status) === 'need_data')
+                    ->validationAttribute('üzenet')
+                    ->validationMessages([
+                        'required' => 'A(z) :attribute mező kitöltése kötelező, ha az "Információ szükséges" státuszt választja.',
+                    ])
+                    ->columnSpanFull()
+                    ->rows(4),
                 DatePicker::make('purchase_date')
                     ->disabled(),
                 DatePicker::make('appeald_at')
