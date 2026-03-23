@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\UserSubmissionController;
+use App\Http\Controllers\FaqController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -35,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/log-out', [AuthController::class, 'logUserOut'])->name('logout');
     Route::get('/promotions/{promotion}', [DashboardController::class, 'showPromotion'])->name('promotion.show');
     Route::post('/user-submissions/{submission}/mark-updated', [UserSubmissionController::class, 'markUpdated'])->name('mark-updated-user-submission');
+    Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
 });
 
 Route::middleware(['auth:admin'])->group(function () {

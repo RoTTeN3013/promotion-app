@@ -53,5 +53,14 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">GYIK</h5>
+                    <p class="card-text">Gyakran ismételt kérdések és válaszok.</p>
+                    <a href="{{ route('faq.index') }}" class="btn btn-primary">Megtekintés</a>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
