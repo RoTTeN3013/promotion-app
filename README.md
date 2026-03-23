@@ -10,7 +10,7 @@ Laravel 13 + Filament alapú promóciókezelő rendszer.
 - Dashboard aktív promóciók listájával
 - Promóció részletek megtekintése
 - Feltöltés (submission) létrehozása dokumentummal és terméklistával - Adminok az admin-panelen keresztül tudnak
-termékeket kezelni (hozzáadni, törölni, edit) - Így egy termék több promóciónál is felhasználható - A rendszer figyeli a beállított időintervallumokat is (Promóció kezdete - vége és feltöltés időszak kezdete - vége - Egy felhasználó egy promócióra csak egyszer jogosult (egy feltöltés engedélyezett) - A rendszer az előre beállított termélkek ára alapján számolja a visszafizetés összegét. Státuszok - Feltöltve (submitted), Ellenőrzés alatt (under_review), Elfogadva (approved), Elutasítva (rejected), Fellebbezve (appeald), Kifizetve (paid).
+termékeket kezelni (hozzáadni, törölni, edit) - Így egy termék több promóciónál is felhasználható - A rendszer figyeli a beállított időintervallumokat is (Promóció kezdete - vége és feltöltés időszak kezdete - vége - Egy felhasználó egy promócióra csak egyszer jogosult (egy feltöltés engedélyezett) - A rendszer az előre beállított termékek ára alapján számolja a visszafizetés összegét. Státuszok - Feltöltve (submitted), Ellenőrzés alatt (under_review), Elfogadva (approved), Elutasítva (rejected), Fellebbezve (appeald), Kifizetve (paid).
 - Saját feltöltések listája és részletei
 - Törlés csak `submitted` (Feltöltve) státuszban
 - Fellebbezés csak `rejected` (Elutasítva) státuszban, **egyszer** (`appeald_at` alapján)
