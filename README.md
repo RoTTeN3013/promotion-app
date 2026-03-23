@@ -53,6 +53,18 @@ php artisan migrate --seed
 php artisan serve 
 ```
 
+
+- MAIL confog példa (.env) - Google smtp
+
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=email_cimed@gmail.com
+MAIL_PASSWORD=app_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=email_cimed@gmail.com
+MAIL_FROM_NAME="${APP_NAME}"
+
 ### Felhasználó
 - URL: `/login`
 - Email: `user@example.com`
