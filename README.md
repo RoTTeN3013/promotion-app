@@ -1,58 +1,116 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Promotion App
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Laravel 13 + Filament alapú promóciókezelő rendszer.
 
-## About Laravel
+## Fő funkciók
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Felhasználói oldal
+- Regisztráció / bejelentkezés / kijelentkezés - Dashboard-on keresztül elérhető profile - Update-elhető személyes adatok
+- Validációk: Név, email, Jelszó és confirm, Telefonszám formátum, Bankszámlaszám formátum.
+- Dashboard aktív promóciók listájával
+- Promóció részletek megtekintése
+- Feltöltés (submission) létrehozása dokumentummal és terméklistával - Adminok az admin-panelen keresztül tudnak
+termékeket kezelni (hozzáadni, törölni, edit) - Így egy termék több promóciónál is felhasználható - A rendszer figyeli a beállított időintervallumokat is (Promóció kezdete - vége és feltöltés időszak kezdete - vége - Egy felhasználó egy promócuóra csak egyszer jogosult (egy feltöltés engedélyezett) - A rendszer az előre beállított termélkek éára alapján számolja a visszafizetés összegét. Státuszok - Feltöltve (submitted), Ellenőrzés alatt (under_review), Elfogadva (approved), Elutasítva (rejected), Fellebbezve (appeald), Kifizetve (paid).
+- Saját feltöltések listája és részletei
+- Törlés csak `submitted` (Feltöltve) státuszban
+- Fellebbezés csak `rejected` (Elutasítva) státuszban, **egyszer** (`appeald_at` alapján)
+- Kapcsolatfelvételi űrlap (név/e-mail/telefon automatikusan töltve, nem szerkeszthető)
+- Kapcsolatfelvételhez két külön tábla lett létrehozva (contact_messages és answers) -  Így az adminok láthatjék a bejövő
+üzeneteket és az admin-panelből tudnak válaszolni azokra (státuszok: Beérkezett és megválaszolt, ezekre szűrni is lehet).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Adminok és Felhasználók szeparálva lettek adatbázisban is (jobb kezelhetőség, átláthatóság).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Admin panel (Filament)
+- Erőforrások kezelése: Adminok, Felhasználók, Termékek, Promóciók, Feltöltések, Exportok, Kapcsolati üzenetek, Válaszok
+- A rendszer több promóciót is tud kezelni (ezek az admin felületen hozhatóak létre illetve editálhatóak)
+- Kapcsolati üzenetek szűrése (dátum, státusz), válasz írása modalban
+- Válaszok listája admin és dátum szűrőkkel
+- Feltöltés státusz módosítás
+- Export létrehozás és letöltés - ExportService.php felelős a logikáért OOP elv követése (Dependency Injection).
 
-## Learning Laravel
+## E-mail működés
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Kapcsolati üzenet válasz**: admin válasznál a felhasználó e-mailt kap (`ContactAnswerMail`)
+- **Feltöltés státusz változás**: ha admin módosítja a státuszt, a felhasználó e-mailt kap (`SubmissionStatusChangedMail`)
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Alapértelmezetten a `MAIL_MAILER=log`, tehát lokálisan a levelek a logba kerülnek (`storage/logs/laravel.log`).
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Validációk (főbb üzleti szabályok)
 
-## Agentic Development
+- Egy felhasználó egy promócióra csak egyszer tölthet fel
+- Csak a kiválasztott promócióhoz rendelt termékeket lehet feltölteni
+- Vásárlási dátum a promóció időszakán belül kell legyen
+- Feltöltés csak a promóció upload időablakán belül lehetséges
+- Fellebbezés csak elutasított státuszban és csak egyszer
+- Filament űrlapoknál egyedi magyar hibaüzenetek beállítva
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Export működés
 
+- Export az `approved` státuszú feltöltésekből készül
+- Kimenet:
+	- 100 sorig egy CSV
+	- 100 sor felett ZIP, több CSV fájllal
+- Az export fájl útvonala az `exports.file_path` mezőben tárolódik, így később újra letölthető admin felületről
+
+## Telepítés (rövid útmutató)
+
+### 1) Követelmények
+- PHP 8.3+
+- Composer
+- MySQL/MariaDB
+
+### 2) Projekt telepítése
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+cp .env.example .env
+php artisan key:generate
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 3) `.env` beállítás
+Állítsd be legalább ezeket:
+- `APP_URL`
+- `DB_*` (kapcsolat, adatbázis, felhasználó, jelszó)
+- `MAIL_*` (ha nem log mailert használsz)
 
-## Contributing
+### 4) Adatbázis + seed
+```bash
+php artisan migrate
+php artisan db:seed
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Seeder tartalom:
+- `AdminSeeder`: admin fiók (admin@example.com - Admin1)
+- `UserSeeder`: teszt user (user@example.com - User1)
+- `ProductSeeder`: 100 termék
+- `SubmissionSeeder`: 400 feltöltés (ha hiányzik, promóciókat is létrehoz)
 
-## Code of Conduct
+### 5) Storage link
+```bash
+php artisan storage:link
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 6) Indítás
+```bash
+php artisan serve
+```
 
-## Security Vulnerabilities
+## Bejelentkezési adatok seed után
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Admin (Filament)
+- URL: `/admin`
+- Email: `admin@example.com`
+- Jelszó: `Admin1`
 
-## License
+### Felhasználó
+- URL: `/login`
+- Email: `user@example.com`
+- Jelszó: `User1`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Hasznos parancsok
+
+```bash
+php artisan migrate:fresh --seed
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+```

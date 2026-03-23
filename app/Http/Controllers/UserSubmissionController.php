@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Promotion;
 use App\Models\Submission;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class UserSubmissionController extends Controller
@@ -79,8 +81,28 @@ class UserSubmissionController extends Controller
         $validator->after(function ($validator) use ($request) {
             $promotionId = $request->input('promotion_id');
             $purchaseDateInput = $request->input('purchase_date');
+            $userId = Auth::id();
+            $selectedProductIds = collect($request->input('items', []))
+                ->map(fn ($id) => (int) $id)
+                ->filter()
+                ->unique()
+                ->values();
 
             if (!$promotionId) {
+                return;
+            }
+
+            $alreadySubmitted = Submission::query()
+                ->where('user_id', $userId)
+                ->where('promotion_id', $promotionId)
+                ->exists();
+
+            if ($alreadySubmitted) {
+                $validator->errors()->add(
+                    'promotion_id',
+                    'Erre a promócióra már regisztráltál. Egy felhasználó promóciónként csak egyszer regisztrálhat.'
+                );
+
                 return;
             }
 
@@ -88,6 +110,23 @@ class UserSubmissionController extends Controller
 
             if (!$promotion) {
                 return;
+            }
+
+            if ($selectedProductIds->isNotEmpty()) {
+                $allowedProductIds = $promotion->promotionItems()
+                    ->pluck('product_id')
+                    ->map(fn ($id) => (int) $id);
+
+                $invalidProductIds = $selectedProductIds->diff($allowedProductIds);
+
+                if ($invalidProductIds->isNotEmpty()) {
+                    $validator->errors()->add(
+                        'items',
+                        'Csak a kiválasztott promócióhoz tartozó termékek tölthetők fel.'
+                    );
+
+                    return;
+                }
             }
 
             if ($purchaseDateInput) {
@@ -152,5 +191,56 @@ class UserSubmissionController extends Controller
         return redirect()
             ->route('user-submissions')
             ->with('success', 'A feltöltés sikeresen elküldve.');
+    }
+
+    public function destroy(Submission $submission): RedirectResponse
+    {
+        abort_unless($submission->user_id === Auth::id(), 403);
+
+        if ($submission->status !== 'submitted') {
+            return back()->withErrors([
+                'submission' => 'A feltöltés csak "Feltöltve" státuszban törölhető.',
+            ]);
+        }
+
+        if ($submission->doc_img_path) {
+            $normalizedPath = ltrim((string) preg_replace('#^(?:public/|storage/)#', '', str_replace('\\\\', '/', $submission->doc_img_path)), '/');
+
+            if ($normalizedPath !== '' && Storage::disk('public')->exists($normalizedPath)) {
+                Storage::disk('public')->delete($normalizedPath);
+            }
+        }
+
+        $submission->delete();
+
+        return redirect()
+            ->route('user-submissions')
+            ->with('success', 'A feltöltés sikeresen törölve.');
+    }
+
+    public function appeal(Submission $submission): RedirectResponse
+    {
+        abort_unless($submission->user_id === Auth::id(), 403);
+
+        if ($submission->status !== 'rejected') {
+            return back()->withErrors([
+                'submission' => 'Fellebbezés csak elutasított feltöltés esetén lehetséges.',
+            ]);
+        }
+
+        if ($submission->appeald_at !== null) {
+            return back()->withErrors([
+                'submission' => 'Ehhez a feltöltéshez már nyújtottál be fellebbezést.',
+            ]);
+        }
+
+        $submission->update([
+            'appeald_at' => now()->toDateString(),
+            'status' => 'appealed',
+        ]);
+
+        return redirect()
+            ->route('user-submissions')
+            ->with('success', 'A fellebbezés sikeresen benyújtva.');
     }
 }

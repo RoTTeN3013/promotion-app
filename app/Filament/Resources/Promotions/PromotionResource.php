@@ -20,6 +20,12 @@ class PromotionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $navigationLabel = 'Promóciók';
+
+    protected static ?string $modelLabel = 'Promóció';
+
+    protected static ?string $pluralModelLabel = 'Promóciók';
+
     public static function form(Schema $schema): Schema
     {
         return PromotionForm::configure($schema);

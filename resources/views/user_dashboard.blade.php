@@ -12,7 +12,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Profilom</h5>
                     <p class="card-text">Személyes adatok megtekintése és kezelése.</p>
-                    <a href="#" class="btn btn-primary">Megtekintés</a>
+                    <a href="{{ route('user-profile.edit') }}" class="btn btn-primary">Megtekintés</a>
                 </div>
             </div>
         </div>

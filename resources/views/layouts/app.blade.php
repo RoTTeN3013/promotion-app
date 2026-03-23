@@ -19,6 +19,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     @auth
+                        <li class="nav-item me-2">
+                            <a href="{{ route('user-dashboard') }}" class="btn btn-outline-light btn-sm">Kezdőoldal</a>
+                        </li>
                         <li class="nav-item">
                             <span class="nav-link">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</span>
                         </li>

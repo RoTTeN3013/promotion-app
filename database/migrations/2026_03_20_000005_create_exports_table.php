@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('promotion_id')->constrained('promotions')->restrictOnDelete();
             $table->date('date_from')->nullable();
             $table->date('date_to')->nullable();
+            $table->string('file_path')->nullable();
             $table->timestamps();
         });
     }

@@ -14,6 +14,7 @@ class Export extends Model
         'date_to',
         'exported_by',
         'promotion_id',
+        'file_path'
     ];
 
     protected function casts(): array
@@ -32,10 +33,5 @@ class Export extends Model
     public function promotion(): BelongsTo
     {
         return $this->belongsTo(Promotion::class);
-    }
-
-    public function exportItems(): HasMany
-    {
-        return $this->hasMany(ExportItem::class);
     }
 }

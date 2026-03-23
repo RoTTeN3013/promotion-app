@@ -58,6 +58,10 @@ class SubmissionForm
                 Select::make('status')
                     ->options(SubmissionStatusHelper::statuses())
                     ->required()
+                    ->validationAttribute('státusz')
+                    ->validationMessages([
+                        'required' => 'A(z) :attribute mező kitöltése kötelező.',
+                    ])
                     ->default('submitted'),
                 DatePicker::make('purchase_date')
                     ->disabled(),

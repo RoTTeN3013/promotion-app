@@ -13,8 +13,8 @@ class ExportController extends Controller
 
     public function download(Export $export): BinaryFileResponse
     {
-        abort_unless(Auth::check(), 403);
+        abort_unless(Auth::guard('admin')->check(), 403);
 
-        return $this->exportService->exportCsv($export);
+        return $this->exportService->download($export);
     }
 }

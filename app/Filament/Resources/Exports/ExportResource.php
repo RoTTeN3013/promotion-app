@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Exports;
 
 use App\Filament\Resources\Exports\Pages\CreateExport;
-use App\Filament\Resources\Exports\Pages\EditExport;
 use App\Filament\Resources\Exports\Pages\ListExports;
 use App\Filament\Resources\Exports\Schemas\ExportForm;
 use App\Filament\Resources\Exports\Tables\ExportsTable;
@@ -19,6 +18,12 @@ class ExportResource extends Resource
     protected static ?string $model = Export::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
+    protected static ?string $navigationLabel = 'Exportok';
+
+    protected static ?string $modelLabel = 'Export';
+
+    protected static ?string $pluralModelLabel = 'Exportok';
 
     public static function form(Schema $schema): Schema
     {
@@ -42,7 +47,6 @@ class ExportResource extends Resource
         return [
             'index' => ListExports::route('/'),
             'create' => CreateExport::route('/create'),
-            'edit' => EditExport::route('/{record}/edit'),
         ];
     }
 }

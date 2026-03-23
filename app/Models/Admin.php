@@ -42,6 +42,11 @@ class Admin extends Authenticatable implements FilamentUser
         return $this->hasMany(Export::class, 'exported_by');
     }
 
+    public function answers(): HasMany
+    {
+        return $this->hasMany(Answer::class, 'admin_id');
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         return true;

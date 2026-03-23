@@ -50,8 +50,8 @@
                             if (Str::startsWith($submission->doc_img_path, ['http://', 'https://'])) {
                                 $imageUrl = $submission->doc_img_path;
                             } else {
-                                $normalizedPath = ltrim((string) preg_replace('#^(?:public/|storage/)#', '', $submission->doc_img_path), '/');
-                                $imageUrl = '/storage/' . $normalizedPath;
+                                $normalizedPath = ltrim((string) preg_replace('#^(?:public/|storage/)#', '', str_replace('\\\\', '/', $submission->doc_img_path)), '/');
+                                $imageUrl = asset('storage/' . $normalizedPath);
                             }
                         }
                     @endphp

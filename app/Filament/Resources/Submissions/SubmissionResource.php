@@ -20,6 +20,12 @@ class SubmissionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $navigationLabel = 'Feltöltések';
+
+    protected static ?string $modelLabel = 'Feltöltés';
+
+    protected static ?string $pluralModelLabel = 'Feltöltések';
+
     public static function form(Schema $schema): Schema
     {
         return SubmissionForm::configure($schema);

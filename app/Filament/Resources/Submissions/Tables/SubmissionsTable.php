@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Submissions\Tables;
 
 use App\Helpers\SubmissionStatusHelper;
+use App\Models\Submission;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -23,7 +24,7 @@ class SubmissionsTable
                     ->sortable(),
                 TextColumn::make('user_full_name')
                     ->label('Felhasználó')
-                    ->formatStateUsing(fn ($record) => $record->user->first_name . ' ' . $record->user->last_name)
+                    ->getStateUsing(fn (Submission $record): string => $record->user ? ($record->user->first_name . ' ' . $record->user->last_name) : '-')
                     ->searchable(['user.first_name', 'user.last_name']),
                 TextColumn::make('promotion.name')
                     ->searchable(),

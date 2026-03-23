@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
+use App\Mail\ContactAnswerMail;
+use App\Models\Answer;
+use App\Models\ContactMessage;
+
 class ContactController extends Controller
 {
     public function create(Request $request): View
@@ -26,17 +30,11 @@ class ContactController extends Controller
             'message.max' => 'Az üzenet legfeljebb :max karakter lehet.',
         ]);
 
-        $user = $request->user();
-        $recipient = config('services.support.email', config('mail.from.address'));
-
-        Mail::send('emails.contact_message', [
-            'user' => $user,
-            'messageText' => $validated['message'],
-        ], function ($mail) use ($user, $recipient): void {
-            $mail->to($recipient)
-                ->replyTo($user->email, trim($user->first_name . ' ' . $user->last_name))
-                ->subject('Új kapcsolatfelvételi üzenet: ' . trim($user->first_name . ' ' . $user->last_name));
-        });
+        ContactMessage::create([
+            'user_id' => $request->user()->id,
+            'message' => $validated['message'],
+            'status' => 'received',
+        ]);
 
         return back()->with('success', 'Üzenetedet sikeresen elküldtük. Hamarosan jelentkezünk.');
     }

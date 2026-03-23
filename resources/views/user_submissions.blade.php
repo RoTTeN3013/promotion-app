@@ -51,6 +51,25 @@
                                 <a href="{{ route('view-user-submission', $submission) }}" class="btn btn-outline-secondary btn-sm" title="Megtekintes">
                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                 </a>
+
+                                @if($submission->status === 'submitted')
+                                    <form action="{{ route('delete-user-submission', $submission) }}" method="POST" class="d-inline" onsubmit="return confirm('Biztosan törölni szeretnéd ezt a feltöltést?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Törlés">
+                                            <i class="fa fa-trash" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                @endif
+
+                                @if($submission->status === 'rejected' && $submission->appeald_at === null)
+                                    <form action="{{ route('appeal-user-submission', $submission) }}" method="POST" class="d-inline" onsubmit="return confirm('Biztosan szeretnél fellebbezést benyújtani?');">
+                                        @csrf
+                                        <button type="submit" class="btn btn-outline-warning btn-sm" title="Fellebbezés">
+                                            <i class="fa fa-gavel" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
